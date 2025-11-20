@@ -14,11 +14,17 @@
     body {
       display: flex;
       flex-direction: column;
-      justify-content: center;
-      align-items: center;
+      min-height: 100vh;
       font-family: 'Charter', Georgia, serif;
       color: #111111;
       text-align: center;
+    }
+    .container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
     }
     img {
       width: 220px;
@@ -27,31 +33,28 @@
       margin-bottom: 72px;
       border-radius: 20px;
       user-select: none;
-      flex-shrink: 0;
     }
     #quote {
       font-size: 1.45rem;
-      max-width: 720max;
+      max-width: 720px;
       padding: 0 20px;
       line-height: 1.75;
-      margin-top: -20px;
       opacity: 0;
       transition: opacity 1.8s ease;
     }
-    #quote.show { opacity: 1; }
+    #quote.show { opacity: 1; }   /* ← här var felet tidigare (stun → 1) */
     footer {
-      position: fixed;
-      bottom: 15px;
-      left: 0;
-      width: 100%;
+      padding-bottom: 15px;
       font-size: 0.8rem;
       color: #555;
     }
   </style>
 </head>
 <body>
-  <img src="sten.png" alt="The Stone" id="stone">
-  <div id="quote"></div>
+  <div class="container">
+    <img src="sten.png" alt="The Stone" id="stone">
+    <div id="quote"></div>
+  </div>
   <footer>The Stone has been waiting 4.6 billion years</footer>
 
   <script>
@@ -97,7 +100,6 @@
     ];
 
     let unlocked = false;
-
     const quoteElement = document.getElementById("quote");
 
     function newWisdom() {
