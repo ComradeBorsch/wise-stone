@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>The Stone</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
   <style>
     body {
       margin: 0;
@@ -14,33 +15,32 @@
       justify-content: center;
       align-items: center;
       font-family: Georgia, serif;
-      color: #333;
+      color: #111111;
       text-align: center;
     }
     img {
-      width: 180px;          /* liten och lugn sten */
+      width: 260px;
       height: auto;
       cursor: pointer;
-      transition: transform 0.4s ease;
-      margin-bottom: 40px;
-    }
-    img:hover {
-      transform: scale(1.1);
+      margin-bottom: 50px;
+      border-radius: 20px;
+      user-select: none;
     }
     #quote {
-      font-size: 1.4rem;
-      max-width: 720px;
+      font-family: 'Cinzel', Georgia, serif;
+      font-size: 1.6rem;
+      max-width: 800px;
       padding: 0 20px;
-      line-height: 1.7;
+      line-height: 1.8;
       opacity: 0;
-      transition: opacity 1.5s ease;
+      transition: opacity 1.8s ease;
     }
     #quote.show { opacity: 1; }
     footer {
       position: fixed;
       bottom: 15px;
-      font-size: 0.8rem;
-      color: #202020;
+      font-size: 0.85rem;
+      color: #444;
     }
   </style>
 </head>
@@ -83,6 +83,14 @@
       "Stop running. Sit beside me for a while. Nothing will happen — and that is the point."
     ];
 
+    const sounds = [
+      new Audio("stone1.mp3"),
+      new Audio("stone2.mp3"),
+      new Audio("stone3.mp3"),
+      new Audio("stone4.mp3"),
+      new Audio("stone5.mp3")
+    ];
+
     const quoteElement = document.getElementById("quote");
 
     function newWisdom() {
@@ -91,14 +99,16 @@
         const wisdom = stoneWisdom[Math.floor(Math.random() * stoneWisdom.length)];
         quoteElement.textContent = wisdom;
         quoteElement.classList.add("show");
-      }, 300);
+      }, 400);
     }
 
-    // Klick på stenen
-    document.getElementById("stone").addEventListener("click", newWisdom);
+    document.getElementById("stone").addEventListener("click", () => {
+      const randomSound = sounds[Math.floor(Math.random() * sounds.length)];
+      randomSound.currentTime = 0;
+      randomSound.play();
+    });
 
-    // Auto-byt var 12:e sekund
-    newWisdom();                  // första citatet direkt
+    newWisdom();
     setInterval(newWisdom, 12000);
   </script>
 </body>
