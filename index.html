@@ -7,6 +7,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Charter:wght@400;600&display=swap" rel="stylesheet">
 
   <style>
+    :root {
+      --stone-half: 110px;
+      --quote-gap: 24px;
+    }
+
     html, body {
       height: 100%;
       margin: 0;
@@ -14,44 +19,48 @@
     }
 
     body {
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
       font-family: 'Charter', Georgia, serif;
       color: #111111;
       text-align: center;
+      min-height: 100vh;
+      display: block;
     }
 
-    .container {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      transform: translateY(40px);
+    .center-stage {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      overflow: visible;
     }
 
-    img {
+    #stone {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
       width: 220px;
       height: auto;
       cursor: pointer;
-      margin-bottom: 72px;
       border-radius: 20px;
       user-select: none;
     }
 
     #quote {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      top: calc(50% + var(--stone-half) + var(--quote-gap));
       font-size: 1.45rem;
       max-width: 720px;
+      width: calc(100% - 40px);
       padding: 0 20px;
       line-height: 1.75;
       opacity: 0;
       transition: opacity 1.8s ease;
+      text-align: center;
+      word-wrap: break-word;
     }
-
-    #quote.show { 
-      opacity: 1;
-    }
+    #quote.show { opacity: 1; }
 
     footer {
       position: fixed;
@@ -61,20 +70,27 @@
       text-align: center;
       font-size: 0.8rem;
       color: #555;
+      pointer-events: none;
+    }
+
+    @media (max-width: 420px) {
+      #stone { width: 160px; }
+      :root { --quote-gap: 18px; }
     }
   </style>
 </head>
 
 <body>
 
-  <div class="container">
+  <div class="center-stage" id="stage">
     <img src="sten.png" alt="The Stone" id="stone">
-    <div id="quote"></div>
+    <div id="quote" aria-live="polite"></div>
   </div>
 
   <footer>The Stone has been waiting 4.6 billion years</footer>
 
   <script>
+
     const stoneWisdom = [
       "I am older than your first words. Listen.",
       "Humans run. I lie still. Who has changed the least?",
@@ -108,6 +124,7 @@
       "Stop running. Sit beside me for a while. Nothing will happen — and that is the point."
     ];
 
+
     const sounds = [
       new Audio("sounds/stone1.mp3"),
       new Audio("sounds/stone2.mp3"),
@@ -116,27 +133,109 @@
       new Audio("sounds/stone5.mp3")
     ];
 
+
+    const stone = document.getElementById('stone');
+    const quoteElement = document.getElementById('quote');
+
+
+    if (!stone || !quoteElement) {
+      console.error('Missing #stone or #quote element in DOM.');
+    }
+
+
+    function parseCssPx(varName, fallbackValue) {
+      try {
+        const raw = getComputedStyle(document.documentElement).getPropertyValue(varName);
+        if (!raw) return fallbackValue;
+        const n = parseInt(raw.trim(), 10);
+        return Number.isFinite(n) ? n : fallbackValue;
+      } catch (e) {
+        return fallbackValue;
+      }
+    }
+
+
+    function updateStoneHalf() {
+      if (!stone) return;
+
+      let height;
+
+      try {
+        if (stone.naturalWidth && stone.naturalHeight && stone.naturalHeight > 0) {
+          height = stone.getBoundingClientRect().height;
+        } else {
+
+          height = stone.offsetHeight || 220;
+        }
+      } catch (e) {
+        height = 220;
+      }
+
+      const half = Math.round(height / 2);
+      document.documentElement.style.setProperty('--stone-half', half + 'px');
+
+
+      const quoteGap = parseCssPx('--quote-gap', 24);
+      const stageHeight = window.innerHeight || document.documentElement.clientHeight || 800;
+      const computedTop = (stageHeight / 2) + half + quoteGap;
+
+
+      const safeBottomSpace = 160;
+      if (computedTop > stageHeight - safeBottomSpace) {
+
+        quoteElement.style.top = (stageHeight - safeBottomSpace) + 'px';
+      } else {
+        quoteElement.style.top = '';
+      }
+    }
+
+
+    if (stone) {
+      if (stone.complete) {
+        updateStoneHalf();
+      } else {
+        stone.addEventListener('load', updateStoneHalf);
+
+        stone.addEventListener('error', () => {
+
+          document.documentElement.style.setProperty('--stone-half', '110px');
+        });
+      }
+    }
+
+
+    window.addEventListener('resize', updateStoneHalf);
+
+
     let unlocked = false;
-    const quoteElement = document.getElementById("quote");
 
     function newWisdom() {
-      quoteElement.classList.remove("show");
+      if (!quoteElement) return;
+      quoteElement.classList.remove('show');
       setTimeout(() => {
         const wisdom = stoneWisdom[Math.floor(Math.random() * stoneWisdom.length)];
         quoteElement.textContent = wisdom;
-        quoteElement.classList.add("show");
+        quoteElement.classList.add('show');
+
+        setTimeout(updateStoneHalf, 40);
       }, 400);
     }
 
-    document.getElementById("stone").addEventListener("click", () => {
-      if (!unlocked) {
-        sounds[0].play().catch(() => {});
-        unlocked = true;
-      }
-      const snd = sounds[Math.floor(Math.random() * sounds.length)];
-      snd.currentTime = 0;
-      snd.play();
-    });
+    if (stone) {
+      stone.addEventListener('click', () => {
+        if (!unlocked) {
+
+          sounds[0].play().catch(() => {});
+          unlocked = true;
+        }
+        const snd = sounds[Math.floor(Math.random() * sounds.length)];
+        try {
+          snd.currentTime = 0;
+        } catch (e) { /* ignore */ }
+        snd.play().catch(() => {});
+      });
+    }
+
 
     newWisdom();
     setInterval(newWisdom, 15000);
@@ -144,3 +243,4 @@
 
 </body>
 </html>
+
