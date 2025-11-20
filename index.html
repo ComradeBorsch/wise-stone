@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>The Stone</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Charter:wght@400;600&display=swap" rel="stylesheet">
   <style>
     body {
       margin: 0;
@@ -14,24 +14,24 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      font-family: Georgia, serif;
+      font-family: 'Charter', Georgia, serif;
       color: #111111;
       text-align: center;
     }
     img {
-      width: 260px;
+      width: 300px;
       height: auto;
       cursor: pointer;
-      margin-bottom: 50px;
-      border-radius: 20px;
+      margin-bottom: 30px;   /* mycket närmare texten */
+      border-radius: 22px;
       user-select: none;
     }
     #quote {
-      font-family: 'Cinzel', Georgia, serif;
-      font-size: 1.6rem;
-      max-width: 800px;
+      font-family: 'Charter', Georgia, serif;
+      font-size: 1.45rem;     /* lugnare storlek */
+      max-width: 680px;       /* aldrig för bred */
       padding: 0 20px;
-      line-height: 1.8;
+      line-height: 1.75;
       opacity: 0;
       transition: opacity 1.8s ease;
     }
@@ -39,8 +39,8 @@
     footer {
       position: fixed;
       bottom: 15px;
-      font-size: 0.85rem;
-      color: #444;
+      font-size: 0.8rem;
+      color: #555;
     }
   </style>
 </head>
@@ -84,11 +84,11 @@
     ];
 
     const sounds = [
-      new Audio("stone1.mp3"),
-      new Audio("stone2.mp3"),
-      new Audio("stone3.mp3"),
-      new Audio("stone4.mp3"),
-      new Audio("stone5.mp3")
+      new Audio("sounds/stone1.mp3"),
+      new Audio("sounds/stone2.mp3"),
+      new Audio("sounds/stone3.mp3"),
+      new Audio("sounds/stone4.mp3"),
+      new Audio("sounds/stone5.mp3")
     ];
 
     const quoteElement = document.getElementById("quote");
